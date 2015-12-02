@@ -41,8 +41,6 @@ function extractHour (playlist, remoteHour, localHour) {
 			extract.push(playlist[x]);
 		}
 	}
-	console.log("Extracted");
-	console.log(extract);
 	return extract
 }
 
@@ -62,8 +60,6 @@ function parseList (playlist, date) {
 			localList = localList.concat(extractHour(playlist, 7, 22));
 			localList = localList.concat(extractHour(playlist, 8, 23));
 	}
-	console.log("Local list:");
-	console.log(localList);
 	return localList;
 }
 
@@ -80,6 +76,7 @@ function getDateStr (date) {
 }
 
 function printList (playlist) {
+	var textarea = document.getElementById('playlist');
 	var preStr = "Date\tTime\tTitle\n";
 	for (var x = 0; x < playlist.length; x++) {
 		preStr += getDateStr(playlist[x].time);
@@ -87,36 +84,47 @@ function printList (playlist) {
 		preStr += '\t' + playlist[x].name;
 		preStr += '\n';
 	}
-	$('#playlist').text(preStr);
+	textarea.innerText = preStr;
+	textarea.style.height = "";
+	textarea.style.height = textarea.scrollHeight + "px";
 }
 
-function submit() {
-	var wfmt_playlist;
+function fetchPlaylist(date, callback) {
+	var importList;
+	var playlist = [];
 	var baseUrl="https://api.composer.nprstations.org/v1/widget/55913d0c8fa46b530f88384b/playlist"
-	var pdate = $("#datepicker").val();
-	var splitdate = pdate.split('/');
-	var datestamp;
-	
-	if (splitdate.length < 3) {
-		alert("Please enter a valid date");
-		return;
-	}
-	datestamp = splitdate[2] + '-' + splitdate[0] + '-' + splitdate[1];
-	
+	var datestamp = date.getFullYear() + '-' + zeroPad(date.getMonth()+1, 2) + '-' + zeroPad(date.getDate(), 2);
 	$.get(baseUrl, {datestamp:datestamp}, function (res) {
-		var importList = res.playlist[0].playlist
-		var playlist = [];
+		importList = res.playlist[0].playlist
 		for (var x = 0; x < importList.length; x++) {
 			playlist.push(wfmtToSong(importList[x]));
 		}
-		console.log(playlist);
-		var localList = parseList(playlist, new Date(splitdate[2], parseInt(splitdate[0])-1, splitdate[1]));
+		callback(playlist);
+	});
+}
+
+function submit() {
+	var pickerDate = $("#datepicker").val();
+	var splitDate = pickerDate.split('/');
+	var date;
+
+	if (splitDate.length < 3) {
+		alert("Please enter a valid date");
+		return;
+	}
+	
+	date = new Date(splitDate[2], parseInt(splitDate[0])-1, splitDate[1]);
+	fetchPlaylist(date, function (playlist) {
+		var localList = parseList(playlist, date);
 		printList(localList);
 	});
 }
 $(document).ready(function main () {
+	var date = new Date();
+	$("#datepicker").val((date.getMonth()+1) + '/' + zeroPad(date.getDate(), 2) + '/' + date.getFullYear());
+
 	$("#datepicker").datepicker();
-	//var baseUrl="https://api.composer.nprstations.org/v1/widget/55913d0c8fa46b530f88384b/playlist?t=1449017160141&prog_id=55918f8833f3e8d54ee26252&datestamp=2015-12-01";
-	var nowDate = new Date();
-	$("#datepicker").val((nowDate.getMonth()+1) + '/' + zeroPad(nowDate.getDate(), 2) + '/' + nowDate.getFullYear());
+	$("input").button();
+	$("button").button().click(submit);
+	$("textarea").addClass("ui-corner-all");
 });

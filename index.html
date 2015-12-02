@@ -4,14 +4,24 @@
 <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 <script src="main.js"></script>
+<style>
+	textarea{
+		margin-top: 10px;
+		display: block;
+		width: 100%;
+		padding: 5px;
+		resize: none;
+		overflow-y: hidden; /* set by javascript */
+	}
+</style>
 </head>
 <body>
 
 <p>Playlist Date: <input type="text" id="datepicker" placeholder="Select a date"></p>
 
-<button onclick="submit()">Submit</button>
+<button>Submit</button>
 
-<pre style="border: 1px solid black; padding: 5px" id="playlist"></pre>
+<textarea readonly id="playlist"></textarea>
 
 </body>
 </html>
