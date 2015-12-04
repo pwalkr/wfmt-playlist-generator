@@ -7,11 +7,12 @@
 <style>
 	textarea{
 		margin-top: 10px;
+		margin-bottom: 10px;
 		display: block;
 		width: 100%;
 		padding: 5px;
 		resize: none;
-		overflow-y: hidden; /* set by javascript */
+		overflow-y: hidden; /* height will be set by javascript */
 	}
 </style>
 </head>
@@ -19,9 +20,11 @@
 
 <p>Playlist Date: <input type="text" id="datepicker" placeholder="Select a date"></p>
 
-<button>Submit</button>
+<button id="submit">Submit</button>
 
 <textarea readonly id="playlist"></textarea>
+
+<button id="copy" style="display: none">Copy to Clipboard</button>
 
 </body>
 </html>

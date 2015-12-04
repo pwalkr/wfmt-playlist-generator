@@ -92,6 +92,7 @@ function printList (playlist) {
 	// reset the height to get the right scrollHeight
 	textarea.style.height = "";
 	textarea.style.height = textarea.scrollHeight + "px";
+	$("#copy").show();
 }
 
 function fetchPlaylist(date, callback) {
@@ -141,6 +142,16 @@ $(document).ready(function main () {
 
 	$("#datepicker").datepicker();
 	$("input").button();
-	$("button").button().click(submit);
+	$("button").button();
 	$("textarea").addClass("ui-corner-all");
+
+	$("#submit").click(submit);
+	$("#copy").click(function () {
+		try {
+			$("textarea").select();
+			document.execCommand('copy');
+		} catch (e) {
+			alert("Oops, your browser doesn't appear to support the copy function");
+		}
+	});
 });
