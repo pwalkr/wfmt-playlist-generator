@@ -15,22 +15,14 @@ function wfmtDateToDate (sDate) {
 	return new Date(dateParts[3], parseInt(dateParts[1])-1, dateParts[2], dateParts[4], dateParts[5], dateParts[6]);
 }
 
-function Song () {
-	this.time;
-	this.artist;
-	this.composer;
-	this.conductor;
-	this.name;
-}
-
-function wfmtToSong (playlistSong) {
-	var song = new Song();
-	song.time = wfmtDateToDate(playlistSong._start_time);
-	song.artist = playlistSong.artistName.replace(/"/g,'');
-	song.composer = playlistSong.composerName;
-	song.conductor = playlistSong.conductor
-	song.name = playlistSong.trackName.replace(/"/g,'');
-	return song;
+function Song (wfmtPlaylistSong) {
+	this.time = wfmtDateToDate(wfmtPlaylistSong._start_time);
+	this.duration = wfmtPlaylistSong._duration;
+	this.composer = wfmtPlaylistSong.composerName;
+	this.title = wfmtPlaylistSong.trackName.replace(/"/g,'');
+	this.artist = wfmtPlaylistSong.artistName.replace(/"/g,'');
+	this.album = wfmtPlaylistSong.collectionName;
+	this.label = wfmtPlaylistSong.label;
 }
 
 function extractHour (playlist, remoteHour, localHour) {
@@ -63,26 +55,38 @@ function parseList (playlist, date) {
 	return localList;
 }
 
-function getTimeStr (date) {
-	return zeroPad(date.getHours(), 2) + ':'
+function getStartStr (date) {
+	return zeroPad(date.getMonth()+1, 2) + '/'
+		+ zeroPad(date.getDate(), 2) + '/'
+		+ date.getFullYear() + ' '
+		+ zeroPad(date.getHours(), 2) + ':'
 		+ zeroPad(date.getMinutes(), 2) + ':'
 		+ zeroPad(date.getSeconds(), 2);
 }
 
-function getDateStr (date) {
-	return zeroPad(date.getMonth()+1, 2) + '/'
-		+ zeroPad(date.getDate(), 2) + '/'
-		+ date.getFullYear();
+function getDurationStr (duration) {
+	var minutes = Math.floor(duration/60000);
+	var seconds = Math.floor( (duration-(minutes*60000)) / 1000 );
+	return zeroPad(minutes, 2) + ':' + zeroPad(seconds, 2);
 }
 
 function printList (playlist) {
 	var textarea = document.getElementById('playlist');
-	var preStr = "Date\tTime\tTitle\n";
+	var preStr = "Start Time\t"
+			+ "Duration\t"
+			+ "Composer\t"
+			+ "Title\t"
+			+ "Artist\t"
+			+ "Album\t"
+			+ "Label\n";
 	for (var x = 0; x < playlist.length; x++) {
-		preStr += getDateStr(playlist[x].time);
-		preStr += '\t' + getTimeStr(playlist[x].time);
-		preStr += '\t' + playlist[x].name;
-		preStr += '\n';
+		preStr += getStartStr(playlist[x].time) + '\t';
+		preStr += getDurationStr(playlist[x].duration) + '\t';
+		preStr += playlist[x].composer + '\t';
+		preStr += playlist[x].title + '\t';
+		preStr += playlist[x].artist + '\t';
+		preStr += playlist[x].album + '\t';
+		preStr += playlist[x].label + '\n';
 	}
 	textarea.innerText = preStr;
 	textarea.style.height = "";
@@ -97,7 +101,7 @@ function fetchPlaylist(date, callback) {
 	$.get(baseUrl, {datestamp:datestamp}, function (res) {
 		importList = res.playlist[0].playlist
 		for (var x = 0; x < importList.length; x++) {
-			playlist.push(wfmtToSong(importList[x]));
+			playlist.push(new Song(importList[x]));
 		}
 		callback(playlist);
 	});
