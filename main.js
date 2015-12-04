@@ -111,7 +111,9 @@ function fetchPlaylist(date, callback) {
 function submit() {
 	var pickerDate = $("#datepicker").val();
 	var splitDate = pickerDate.split('/');
+	var loadString = "Loading...";
 	var date;
+	var textarea = document.getElementById('playlist');
 
 	if (splitDate.length < 3) {
 		alert("Please enter a valid date");
@@ -119,10 +121,19 @@ function submit() {
 	}
 	
 	date = new Date(splitDate[2], parseInt(splitDate[0])-1, splitDate[1]);
+
+	textarea.value = loadString;
+
 	fetchPlaylist(date, function (playlist) {
 		var localList = parseList(playlist, date);
 		printList(localList);
 	});
+
+	setTimeout(function () {
+		if (textarea.value === loadString) {
+			textarea.value = "Something went wrong. Please try again";
+		}
+	}, 10000);
 }
 $(document).ready(function main () {
 	var date = new Date();
