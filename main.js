@@ -6,7 +6,7 @@ function zeroPad (value, length) {
 	return value;
 }
 
-function wfmtDateToDate (sDate) {
+function parseDate (sDate) {
 	var dateParts = sDate.match(/^\s*(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)\s*$/);
 	var dateObj;
 	if (! dateParts) {
@@ -16,7 +16,7 @@ function wfmtDateToDate (sDate) {
 }
 
 function Song (wfmtPlaylistSong) {
-	this.time = wfmtDateToDate(wfmtPlaylistSong._start_time);
+	this.time = parseDate(wfmtPlaylistSong._start_time);
 	this.duration = wfmtPlaylistSong._duration;
 	this.composer = wfmtPlaylistSong.composerName;
 	this.title = wfmtPlaylistSong.trackName.replace(/"/g,'');
@@ -88,7 +88,8 @@ function printList (playlist) {
 		preStr += playlist[x].album + '\t';
 		preStr += playlist[x].label + '\n';
 	}
-	textarea.innerHTML = preStr;
+	textarea.value = preStr;
+	// reset the height to get the right scrollHeight
 	textarea.style.height = "";
 	textarea.style.height = textarea.scrollHeight + "px";
 }
