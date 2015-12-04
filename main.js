@@ -88,7 +88,7 @@ function printList (playlist) {
 		preStr += playlist[x].album + '\t';
 		preStr += playlist[x].label + '\n';
 	}
-	textarea.innerText = preStr;
+	textarea.innerHTML = preStr;
 	textarea.style.height = "";
 	textarea.style.height = textarea.scrollHeight + "px";
 }
