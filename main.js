@@ -20,7 +20,15 @@ function Song (wfmtPlaylistSong) {
 	this.duration = wfmtPlaylistSong._duration;
 	this.composer = wfmtPlaylistSong.composerName;
 	this.title = wfmtPlaylistSong.trackName.replace(/"/g,'');
-	this.artist = wfmtPlaylistSong.artistName.replace(/"/g,'');
+	if (wfmtPlaylistSong.artistName) {
+		this.artist = wfmtPlaylistSong.artistName.replace(/"/g,'');
+	}
+	else if (wfmtPlaylistSong.conductor) {
+		this.artist = wfmtPlaylistSong.conductor.replace(/"/g,'');
+	}
+	else {
+		this.artist = "";
+	}
 	this.album = wfmtPlaylistSong.collectionName;
 	this.label = wfmtPlaylistSong.label;
 }
